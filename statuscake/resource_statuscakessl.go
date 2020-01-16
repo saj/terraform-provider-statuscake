@@ -39,9 +39,10 @@ func resourceStatusCakeSsl() *schema.Resource {
 				Set:      schema.HashString,
 			},
 
-			"checkrate": {
+			"check_rate": {
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
+				Default:  300,
 			},
 
 			"alert_at": {
@@ -142,7 +143,7 @@ func CreateSsl(d *schema.ResourceData, meta interface{}) error {
 
 	newSsl := &statuscake.PartialSsl{
 		Domain:        d.Get("domain").(string),
-		Checkrate:     strconv.Itoa(d.Get("checkrate").(int)),
+		Checkrate:     strconv.Itoa(d.Get("check_rate").(int)),
 		AlertReminder: d.Get("alert_reminder").(bool),
 		AlertExpiry:   d.Get("alert_expiry").(bool),
 		AlertBroken:   d.Get("alert_broken").(bool),
@@ -209,7 +210,7 @@ func ReadSsl(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Error Getting StatusCake Ssl Details for %s: Error: %s", d.Id(), err)
 	}
 	d.Set("domain", response.Domain)
-	d.Set("checkrate", response.Checkrate)
+	d.Set("check_rate", response.Checkrate)
 	d.Set("alert_reminder", response.AlertReminder)
 	d.Set("alert_expiry", response.AlertExpiry)
 	d.Set("alert_broken", response.AlertBroken)
@@ -247,7 +248,7 @@ func getStatusCakeSslInput(d *schema.ResourceData) *statuscake.PartialSsl {
 		ssl.Domain = v.(string)
 	}
 
-	if v, ok := d.GetOk("checkrate"); ok {
+	if v, ok := d.GetOk("check_rate"); ok {
 		ssl.Checkrate = strconv.Itoa(v.(int))
 	}
 
