@@ -31,7 +31,7 @@ The following arguments are supported:
 
 * `domain` - (Required) URL to check, has to start with https://
 * `contact_group` - (Optional) Set test contact groups, must be array of strings.
-* `check_rate` - (Optional) Test check rate in seconds. Defaults to 300. May be set to one of 300, 600, 1800, 3600, 86400, or 2073600.
+* `check_rate` - (Optional) Test check rate in seconds. Defaults to 86400. May be set to one of 600, 1800, 3600, 86400, or 2073600.
 * `alert_at` - (Required) When you wish to receive reminders. Must be exactly 3 numeric values seperated by commas
 * `alert_reminder` - (Required) Set to true to enable reminder alerts. False to disable. Also see alert_at
 * `alert_expiry` - (Required) Set to true to enable expiration alerts. False to disable

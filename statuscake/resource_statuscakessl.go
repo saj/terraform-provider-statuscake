@@ -42,7 +42,7 @@ func resourceStatusCakeSsl() *schema.Resource {
 			"check_rate": {
 				Type:     schema.TypeInt,
 				Optional: true,
-				Default:  300,
+				Default:  86400,
 			},
 
 			"alert_at": {
