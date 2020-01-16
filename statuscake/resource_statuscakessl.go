@@ -29,6 +29,7 @@ func resourceStatusCakeSsl() *schema.Resource {
 			"domain": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"contact_group": {
