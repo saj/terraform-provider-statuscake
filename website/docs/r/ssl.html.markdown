@@ -17,7 +17,7 @@ resource "statuscake_ssl" "google" {
   domain         = "https://www.google.com"
   contact_group  = ["3", "12345"]
   check_rate     = 3600
-  alert_at       = "18,71,344"
+  alert_at       = "3,14,30"
   alert_reminder = true
   alert_expiry   = true
   alert_broken   = false
@@ -32,8 +32,8 @@ The following arguments are supported:
 * `domain` - (Required) URL to check, has to start with https://
 * `contact_group` - (Optional) Set test contact groups, must be array of strings.
 * `check_rate` - (Optional) Test check rate in seconds. Defaults to 86400. May be set to one of 600, 1800, 3600, 86400, or 2073600.
-* `alert_at` - (Required) When you wish to receive reminders. Must be exactly 3 numeric values seperated by commas
-* `alert_reminder` - (Required) Set to true to enable reminder alerts. False to disable. Also see alert_at
+* `alert_at` - (Required) Reminder alerting intervals. This string value must be specified as exactly three comma-separated positive integers. Each integer is a relative measure in days. For example, the string `"3,14,30"` will trigger an initial reminder alert at thirty days prior to certificate expiration, a second reminder at fourteen days, then -- if the certificate is still yet to be renewed -- a final reminder three days prior to certificate expiration.
+* `alert_reminder` - (Required) Set to true to enable expiration reminder alerts. False to disable. Alerts are sent prior to certificate expiration at intervals defined by `alert_at`.
 * `alert_expiry` - (Required) Set to true to enable expiration alerts. False to disable
 * `alert_broken` - (Required) Set to true to enable broken alerts. False to disable
 * `alert_mixed` - (Required) Set to true to enable mixed content alerts. False to disable
