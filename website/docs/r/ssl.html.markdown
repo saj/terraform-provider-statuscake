@@ -14,14 +14,14 @@ The ssl resource allows StatusCake ssl tests to be managed by Terraform.
 
 ```hcl
 resource "statuscake_ssl" "google" {
-	domain = "https://www.google.com"
-	contact_groups_c = "3,12"
-        checkrate = 3600
-        alert_at = "18,71,344"
-        alert_reminder = true
-	alert_expiry = true
-        alert_broken = false
-        alert_mixed = true
+  domain         = "https://www.google.com"
+  contact_group  = ["3", "12345"]
+  checkrate      = 3600
+  alert_at       = "18,71,344"
+  alert_reminder = true
+  alert_expiry   = true
+  alert_broken   = false
+  alert_mixed    = true
 }
 ```
 
@@ -30,7 +30,7 @@ resource "statuscake_ssl" "google" {
 The following arguments are supported:
 
 * `domain` - (Required) URL to check, has to start with https://
-* `contact_groups_c` - (Required) Contactgroup IDs, separated by a comma. Can be an empty string
+* `contact_group` - (Optional) Set test contact groups, must be array of strings.
 * `checkrate` - (Required) Checkrate in seconds. Accepted: [300, 600, 1800, 3600, 86400, 2073600]
 * `alert_at` - (Required) When you wish to receive reminders. Must be exactly 3 numeric values seperated by commas
 * `alert_reminder` - (Required) Set to true to enable reminder alerts. False to disable. Also see alert_at

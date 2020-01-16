@@ -2,12 +2,12 @@ package statuscake
 
 import (
 	"fmt"
+	"log"
 	"strconv"
+	"strings"
 
 	"github.com/DreamItGetIT/statuscake"
 	"github.com/hashicorp/terraform/helper/schema"
-	"log"
-	"strings"
 )
 
 func resourceStatusCakeSsl() *schema.Resource {
@@ -31,19 +31,11 @@ func resourceStatusCakeSsl() *schema.Resource {
 				Required: true,
 			},
 
-			"contact_groups": {
-				Type:          schema.TypeSet,
-				Elem:          &schema.Schema{Type: schema.TypeString},
-				Optional:      true,
-				Computed:      true,
-				ConflictsWith: []string{"contact_groups_c"},
-			},
-
-			"contact_groups_c": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				Computed:      true,
-				ConflictsWith: []string{"contact_groups"},
+			"contact_group": {
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Set:      schema.HashString,
 			},
 
 			"checkrate": {
@@ -147,19 +139,18 @@ func resourceStatusCakeSsl() *schema.Resource {
 func CreateSsl(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*statuscake.Client)
 
-	if v, ok := d.GetOk("contact_groups"); ok {
-		d.Set("contact_groups_c", strings.Join(castSetToSliceStrings(v.(*schema.Set).List()), ","))
+	newSsl := &statuscake.PartialSsl{
+		Domain:        d.Get("domain").(string),
+		Checkrate:     strconv.Itoa(d.Get("checkrate").(int)),
+		AlertReminder: d.Get("alert_reminder").(bool),
+		AlertExpiry:   d.Get("alert_expiry").(bool),
+		AlertBroken:   d.Get("alert_broken").(bool),
+		AlertMixed:    d.Get("alert_mixed").(bool),
+		AlertAt:       d.Get("alert_at").(string),
 	}
 
-	newSsl := &statuscake.PartialSsl{
-		Domain:         d.Get("domain").(string),
-		Checkrate:      strconv.Itoa(d.Get("checkrate").(int)),
-		ContactGroupsC: d.Get("contact_groups_c").(string),
-		AlertReminder:  d.Get("alert_reminder").(bool),
-		AlertExpiry:    d.Get("alert_expiry").(bool),
-		AlertBroken:    d.Get("alert_broken").(bool),
-		AlertMixed:     d.Get("alert_mixed").(bool),
-		AlertAt:        d.Get("alert_at").(string),
+	if v, ok := d.GetOk("contact_group"); ok {
+		newSsl.ContactGroupsC = strings.Join(castSetToSliceStrings(v.(*schema.Set).List()), ",")
 	}
 
 	log.Printf("[DEBUG] Creating new StatusCake Ssl: %s", d.Get("domain").(string))
@@ -218,14 +209,13 @@ func ReadSsl(d *schema.ResourceData, meta interface{}) error {
 	}
 	d.Set("domain", response.Domain)
 	d.Set("checkrate", response.Checkrate)
-	d.Set("contact_groups_c", response.ContactGroupsC)
 	d.Set("alert_reminder", response.AlertReminder)
 	d.Set("alert_expiry", response.AlertExpiry)
 	d.Set("alert_broken", response.AlertBroken)
 	d.Set("alert_mixed", response.AlertMixed)
 	d.Set("alert_at", response.AlertAt)
 	d.Set("ssl_id", response.ID)
-	d.Set("contact_groups", response.ContactGroups)
+	d.Set("contact_group", response.ContactGroups)
 	d.Set("paused", response.Paused)
 	d.Set("issuer_cn", response.IssuerCn)
 	d.Set("cert_score", response.CertScore)
@@ -260,10 +250,8 @@ func getStatusCakeSslInput(d *schema.ResourceData) *statuscake.PartialSsl {
 		ssl.Checkrate = strconv.Itoa(v.(int))
 	}
 
-	if v, ok := d.GetOk("contact_groups"); ok {
+	if v, ok := d.GetOk("contact_group"); ok {
 		ssl.ContactGroupsC = strings.Join(castSetToSliceStrings(v.(*schema.Set).List()), ",")
-	} else if v, ok := d.GetOk("contact_groups_c"); ok {
-		ssl.ContactGroupsC = v.(string)
 	}
 
 	if v, ok := d.GetOk("alert_reminder"); ok {
